@@ -10,7 +10,7 @@
 #include "../sealing/sector_parameters.hpp"
 #include "../util/sector_util.cpp"
 
-// g++ -g -Wall -Wextra -Werror -DRUNTIME_SECTOR_SIZE -march=native -O3 -I../pc1 ../sealing/sector_parameters.cpp tree_d.cpp -L../deps/blst -lblst
+// g++ -g -Wall -Wextra -Werror -DRUNTIME_SECTOR_SIZE -march=native -O3 -I../pc1 tree_d.cpp -L../deps/blst -lblst
 
 int main(int argc, char* argv[]) {
   int  opt   = 0;
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
   auto start = std::chrono::high_resolution_clock::now();
 
   SECTOR_PARAMS_TABLE(                                           \
-    TreeD<decltype(params)> tree_d(copy);                        \
+    TreeD tree_d(params, copy);                        \
                                                                  \
     if (!data_filename.empty()) {                                \
       tree_d.BuildTree(&comm_d, tree_d_filename, data_filename); \
