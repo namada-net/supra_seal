@@ -189,6 +189,12 @@ $NVCC $SECTOR_SIZE -DNO_SPDK -DSTREAMING_NODE_READER_FILES \
      -x cu tools/tree_r.cpp -o bin/tree_r \
      -Iposeidon -Ideps/sppark -Ideps/sppark/util -Ideps/blst/src -L deps/blst -lblst -lconfig++ &
 
+# tree-d CPU only
+$CXX -DRUNTIME_SECTOR_SIZE $CXXSTD -g -O3 -march=native \
+    -Wall -Wextra -Werror -Wno-subobject-linkage \
+    tools/tree_d.cpp \
+    -o bin/tree_d_cpu -Ipc1 -L deps/blst -lblst &
+
 # Standalone GPU pc2
 $NVCC $SECTOR_SIZE -DNO_SPDK -DSTREAMING_NODE_READER_FILES \
      $CUDA_ARCH -std=c++17 -g -O3 -Xcompiler -march=native \
