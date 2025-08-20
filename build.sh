@@ -19,7 +19,12 @@ NVCC=${NVCC:-nvcc}
 
 CUDA=$(dirname $(dirname $(which $NVCC)))
 SPDK="deps/spdk-v22.09"
-CUDA_ARCH="-arch=sm_80 -gencode arch=compute_70,code=sm_70 -t0"
+CUDA_ARCH="-arch=sm_80"
+if nvcc -arch=sm_70 -E -x cu /dev/null > /dev/null 2>&1; then
+    CUDA_ARCH="$CUDA_ARCH -gencode arch=compute_70,code=sm_70 -t0"
+elif nvcc -arch=sm_75 -E -x cu /dev/null > /dev/null 2>&1; then
+    CUDA_ARCH="$CUDA_ARCH -gencode arch=compute_75,code=sm_75 -t0"
+fi
 CXXSTD=`$CXX -dM -E -x c++ /dev/null | \
         awk '{ if($2=="__cplusplus" && $3<"2017") print "-std=c++17"; }'`
 

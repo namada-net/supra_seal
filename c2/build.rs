@@ -7,9 +7,14 @@ fn main() {
 fn groth16_cuda() {
     let mut nvcc = cc::Build::new();
     nvcc.cuda(true);
-    nvcc.flag("-arch=sm_80");
-    nvcc.flag("-gencode").flag("arch=compute_70,code=sm_70");
-    nvcc.flag("-t0");
+    nvcc.is_flag_supported("-arch=sm_80") {
+        nvcc.flag("-arch=sm_80");
+        if nvcc.is_flag_supported("-arch=sm_70) {
+            nvcc.flags(["-gencode", "arch=compute_70,code=sm_70", "-t0"]);
+        else if nvcc.is_flag_supported("-arch=sm_75) {
+            nvcc.flags(["-gencode", "arch=compute_75,code=sm_75", "-t0"]);
+        }
+    }
     nvcc.define("TAKE_RESPONSIBILITY_FOR_ERROR_MESSAGE", None);
     nvcc.define("FEATURE_BLS12_381", None);
     apply_blst_flags(&mut nvcc);
