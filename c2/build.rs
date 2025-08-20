@@ -4,14 +4,31 @@ fn main() {
     groth16_cuda();
 }
 
+fn is_flag_supported(nvcc: &cc::Build, flag: &str) -> bool {
+    #[cfg(unix)]
+    const DEV_NULL: &str = "/dev/null";
+    #[cfg(windows)]
+    const DEV_NULL: &str = "nul";
+
+    let out = nvcc
+        .get_compiler()
+        .to_command()
+        .arg(flag)
+        .args(["-E", "-x", "c", DEV_NULL])
+        .output()
+        .expect("impossible");
+
+    out.status.success()
+}
+
 fn groth16_cuda() {
     let mut nvcc = cc::Build::new();
     nvcc.cuda(true);
-    if nvcc.is_flag_supported("-arch=sm_80").unwrap_or(false) {
+    if is_flag_supported(&nvcc, "-arch=sm_80") {
         nvcc.flag("-arch=sm_80");
-        if nvcc.is_flag_supported("-arch=sm_70").unwrap_or(false) {
+        if is_flag_supported(&nvcc, "-arch=sm_70") {
             nvcc.flags(["-gencode", "arch=compute_70,code=sm_70", "-t0"]);
-        } else if nvcc.is_flag_supported("-arch=sm_75").unwrap_or(false) {
+        } else if is_flag_supported(&nvcc, "-arch=sm_75") {
             nvcc.flags(["-gencode", "arch=compute_75,code=sm_75", "-t0"]);
         }
     }
