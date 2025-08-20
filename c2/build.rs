@@ -7,11 +7,11 @@ fn main() {
 fn groth16_cuda() {
     let mut nvcc = cc::Build::new();
     nvcc.cuda(true);
-    nvcc.is_flag_supported("-arch=sm_80") {
+    if nvcc.is_flag_supported("-arch=sm_80").unwrap_or(false) {
         nvcc.flag("-arch=sm_80");
-        if nvcc.is_flag_supported("-arch=sm_70) {
+        if nvcc.is_flag_supported("-arch=sm_70").unwrap_or(false) {
             nvcc.flags(["-gencode", "arch=compute_70,code=sm_70", "-t0"]);
-        else if nvcc.is_flag_supported("-arch=sm_75) {
+        } else if nvcc.is_flag_supported("-arch=sm_75").unwrap_or(false) {
             nvcc.flags(["-gencode", "arch=compute_75,code=sm_75", "-t0"]);
         }
     }
