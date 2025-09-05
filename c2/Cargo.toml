@@ -8,7 +8,7 @@ repository = "https://github.com/supranational/supra_seal"
 
 [dependencies]
 blst = "^0.3.11"
-sppark = "^0.1.5"
+sppark = { version = "^0.1.13", features = ["cuda"] }
 
 [features]
 default = []
@@ -22,3 +22,4 @@ quiet = []
 
 [build-dependencies]
 cc = { version = "^1.0.70", features = ["parallel"] }
+sppark = { version = "^0.1.13", features = ["build"] }

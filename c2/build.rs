@@ -1,49 +1,9 @@
 use std::env;
 
 fn main() {
-    groth16_cuda();
-}
-
-fn is_flag_supported(nvcc: &cc::Build, flag: &str) -> bool {
-    #[cfg(unix)]
-    const DEV_NULL: &str = "/dev/null";
-    #[cfg(windows)]
-    const DEV_NULL: &str = "nul";
-
-    let out = nvcc
-        .get_compiler()
-        .to_command()
-        .arg(flag)
-        .args(["-E", "-x", "c", DEV_NULL])
-        .output()
-        .expect("impossible");
-
-    out.status.success()
-}
-
-fn groth16_cuda() {
-    let mut nvcc = cc::Build::new();
-    nvcc.cuda(true);
-    if is_flag_supported(&nvcc, "-arch=sm_80") {
-        nvcc.flag("-arch=sm_80");
-        if is_flag_supported(&nvcc, "-arch=sm_70") {
-            nvcc.flags(["-gencode", "arch=compute_70,code=sm_70", "-t0"]);
-        } else if is_flag_supported(&nvcc, "-arch=sm_75") {
-            nvcc.flags(["-gencode", "arch=compute_75,code=sm_75", "-t0"]);
-        }
-    }
-    nvcc.define("TAKE_RESPONSIBILITY_FOR_ERROR_MESSAGE", None);
+    let mut nvcc = sppark::build::ccmd();
     nvcc.define("FEATURE_BLS12_381", None);
     apply_blst_flags(&mut nvcc);
-    if let Some(include) = env::var_os("DEP_BLST_C_SRC") {
-        nvcc.include(&include);
-    }
-    if let Some(include) = env::var_os("DEP_SPPARK_ROOT") {
-        nvcc.include(include);
-    }
-    nvcc.flag("-Xcompiler").flag("-Wno-subobject-linkage");
-    nvcc.flag("-Xcompiler").flag("-Wno-unused-function");
-
     nvcc.file("cuda/groth16_cuda.cu").compile("groth16_cuda");
 
     println!("cargo:rerun-if-changed=cuda");
